@@ -15,9 +15,9 @@ data class UserData(
     override fun toString() = "User($id)"
 }
 
-interface User {
-    val client: KodiClient
-    val id: Long
+interface User : ISnowflake {
+    override val client: KodiClient
+    override val id: Long
     val name: String
     val discriminator: Int
     val bot: Boolean
@@ -35,6 +35,9 @@ interface User {
 
     val displayAvatarUrl: String
         get() = avatarUrl ?: defaultAvatarUrl
+
+    override val mention: String
+        get() = "<@$id>"
 
     companion object {
         const val AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s"

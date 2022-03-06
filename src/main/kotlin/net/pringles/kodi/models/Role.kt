@@ -4,8 +4,8 @@ import net.pringles.kodi.gateway.KodiClient
 
 data class RoleData(
     override val client: KodiClient,
-    override val guild: Guild,
     override val id: Long,
+    override val guildId: Long,
 ) : Role {
     override lateinit var name: String
     override var color: Int = 0
@@ -16,13 +16,16 @@ data class RoleData(
     override var hoist: Boolean = false
     override var mentionable: Boolean = false
 
-    override fun toString() = "Role(${guild.id} > $id)"
+    override suspend fun guild() =
+        client.tempGuildCache[guildId]
+
+    override fun toString() = "Role($guildId > $id)"
 }
 
-interface Role {
-    val client: KodiClient
-    val guild: Guild
-    val id: Long
+interface Role : ISnowflake {
+    override val client: KodiClient
+    override val id: Long
+    val guildId: Long
     val name: String
     val color: Int
     val position: Int
@@ -32,8 +35,11 @@ interface Role {
     val hoist: Boolean
     val mentionable: Boolean
 
-    val iconUrl: String?
-        get() = iconId?.let { ICON_URL.format(id, it) }
+    val iconUrl: String? get() = iconId?.let { ICON_URL.format(id, it) }
+
+    suspend fun guild(): Guild?
+
+    override val mention: String get() = "<@&$id>"
 
     companion object {
         const val ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png"

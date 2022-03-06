@@ -7,6 +7,7 @@ import io.ktor.http.cio.websocket.send
 import kotlinx.coroutines.flow.consumeAsFlow
 import net.pringles.kodi.gateway.events.GuildCreateHandler
 import net.pringles.kodi.gateway.events.IEventHandler
+import net.pringles.kodi.gateway.events.MessageCreateHandler
 import net.pringles.kodi.gateway.events.RawEvent
 import net.pringles.kodi.gateway.events.ReadyHandler
 import net.pringles.kodi.gateway.misc.Intent
@@ -79,7 +80,8 @@ internal class WebSocket(val client: KodiClient, val session: DefaultWebSocketSe
     internal companion object {
         val handlers: Map<String, IEventHandler> = listOf(
             ReadyHandler,
-            GuildCreateHandler
+            GuildCreateHandler,
+            MessageCreateHandler
         ).associateBy { it.identifier }
     }
 }

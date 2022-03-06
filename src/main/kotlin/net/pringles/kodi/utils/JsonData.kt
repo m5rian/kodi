@@ -25,9 +25,10 @@ class JsonData(private var node: JsonNode?) {
     fun list(): MutableList<JsonData> = listOrNull() ?: throw IllegalStateException("Cannot convert this data as list")
     fun listOrNull(): MutableList<JsonData>? = node?.toList()?.map { JsonData(it) }?.toMutableList()
 
+    fun asInt(): Int = node?.asInt() ?: 0
     fun asLong(): Long = node?.asLong() ?: 0L
     fun time(): OffsetDateTime = timeOrNull() ?: throw IllegalStateException("Cannot convert this data as time")
-    fun timeOrNull(): OffsetDateTime? = textOrNull()?.let { OffsetDateTime.from(dateTimeParser.parse(it)) }
+    fun timeOrNull(): OffsetDateTime? = textOrNull()?.let { OffsetDateTime.from(DATE_TIME_PARSER.parse(it)) }
 
     fun hasValue(field: String) = node?.hasNonNull(field) != false
 
@@ -45,7 +46,8 @@ class JsonData(private var node: JsonNode?) {
 
     companion object {
         private val mapper = jacksonObjectMapper()
-        private val dateTimeParser = ISO_INSTANT.withZone(ZoneOffset.UTC)
+
+        val DATE_TIME_PARSER = ISO_INSTANT.withZone(ZoneOffset.UTC)
 
         fun empty() = JsonData(null)
         fun create(text: String) = JsonData(mapper.readTree(text))

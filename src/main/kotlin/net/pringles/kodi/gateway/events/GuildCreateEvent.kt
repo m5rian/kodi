@@ -4,7 +4,7 @@ import net.pringles.kodi.gateway.KodiClient
 import net.pringles.kodi.models.Guild
 import net.pringles.kodi.utils.JsonData
 
-class GuildCreateEvent(
+data class GuildCreateEvent(
     override val client: KodiClient,
     override val type: String,
     val guild: Guild

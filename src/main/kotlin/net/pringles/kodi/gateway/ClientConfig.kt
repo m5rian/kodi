@@ -14,6 +14,10 @@ class ClientConfig(
     var httpClient: HttpClient = HttpClient(CIO) { install(WebSockets) },
     var scope: CoroutineScope = GlobalScope,
 ) {
+    fun intents(builder: IntentsConfig.() -> Unit) {
+        intentsConfig = IntentsConfig().apply(builder)
+    }
+
     fun intents(vararg intents: Intent) {
         intentsConfig.intents.addAll(intents)
     }
@@ -22,8 +26,14 @@ class ClientConfig(
         intentsConfig.intents.addAll(intents)
     }
 
-    fun intents(builder: IntentsConfig.() -> Unit) {
-        intentsConfig = IntentsConfig().apply(builder)
+    fun setIntents(vararg intents: Intent) {
+        intentsConfig.intents.clear()
+        intentsConfig.intents.addAll(intents)
+    }
+
+    fun setIntents(intents: Collection<Intent>) {
+        intentsConfig.intents.clear()
+        intentsConfig.intents.addAll(intents)
     }
 }
 
@@ -36,5 +46,13 @@ class IntentsConfig(
 
     operator fun Collection<Intent>.unaryPlus() {
         intents.addAll(this)
+    }
+
+    operator fun Intent.unaryMinus() {
+        intents.remove(this)
+    }
+
+    operator fun Collection<Intent>.unaryMinus() {
+        intents.removeAll(this)
     }
 }

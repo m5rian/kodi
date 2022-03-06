@@ -5,26 +5,34 @@ import java.time.OffsetDateTime
 
 data class MemberData(
     override val client: KodiClient,
-    override val guild: Guild,
+    override val guildId: Long,
     override val user: User,
 ) : Member {
-    override var roles: List<Role> = emptyList()
+    override var roleIds: List<Long> = emptyList()
     override var mute: Boolean = false
     override var deaf: Boolean = false
     override lateinit var joinedAt: OffsetDateTime
 
-    override fun toString() = "Member(${guild.id} > ${user.id})"
+    override suspend fun guild() = client.tempGuildCache[guildId]
+    override suspend fun roles() = client.tempRoleCache.values.filter { it.id in roleIds }
+
+    override fun toString() = "Member(${guildId} > ${user.id})"
 }
 
-interface Member {
-    val client: KodiClient
-    val guild: Guild
+interface Member : ISnowflake {
+    override val client: KodiClient
+    val guildId: Long
+    val roleIds: List<Long>
     val user: User
-    val roles: List<Role>
     val mute: Boolean
     val deaf: Boolean
     val joinedAt: OffsetDateTime
 
-    val id: Long
-        get() = user.id
+    override val id: Long get() = user.id
+
+    suspend fun guild(): Guild?
+    suspend fun roles(): List<Role>
+
+    override val mention: String
+        get() = "<@!$id>"
 }
