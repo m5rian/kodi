@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 class JsonData(private var node: JsonNode?) {
     operator fun get(field: String): JsonData = JsonData(node?.path(field))
@@ -14,8 +17,17 @@ class JsonData(private var node: JsonNode?) {
     fun textOrNull(): String? = node?.textValue()
     fun int(): Int = intOrNull() ?: throw IllegalStateException("Cannot convert this data as int")
     fun intOrNull(): Int? = node?.intValue()
+    fun long(): Long = longOrNull() ?: throw IllegalStateException("Cannot convert this data as long")
+    fun longOrNull(): Long? = if (node?.isLong == true) node?.longValue() else null
     fun bool(): Boolean = boolOrNull() ?: throw IllegalStateException("Cannot convert this data as bool")
     fun boolOrNull(): Boolean? = if (node?.isBoolean == true) node!!.booleanValue() else null
+
+    fun list(): MutableList<JsonData> = listOrNull() ?: throw IllegalStateException("Cannot convert this data as list")
+    fun listOrNull(): MutableList<JsonData>? = node?.toList()?.map { JsonData(it) }?.toMutableList()
+
+    fun asLong(): Long = node?.asLong() ?: 0L
+    fun time(): OffsetDateTime = timeOrNull() ?: throw IllegalStateException("Cannot convert this data as time")
+    fun timeOrNull(): OffsetDateTime? = textOrNull()?.let { OffsetDateTime.from(dateTimeParser.parse(it)) }
 
     fun hasValue(field: String) = node?.hasNonNull(field) != false
 
@@ -33,6 +45,7 @@ class JsonData(private var node: JsonNode?) {
 
     companion object {
         private val mapper = jacksonObjectMapper()
+        private val dateTimeParser = ISO_INSTANT.withZone(ZoneOffset.UTC)
 
         fun empty() = JsonData(null)
         fun create(text: String) = JsonData(mapper.readTree(text))

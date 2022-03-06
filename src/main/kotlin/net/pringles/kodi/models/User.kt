@@ -28,12 +28,13 @@ interface User {
         get() = "$name#$discriminator"
 
     val avatarUrl: String?
-        get() =
-            if (avatarId == null) null
-            else AVATAR_URL.format(id, avatarId!!, if (avatarId!!.startsWith("a_")) "gif" else "png")
+        get() = avatarId?.let { AVATAR_URL.format(id, it, if (it.startsWith("a_")) "gif" else "png") }
+
+    val defaultAvatarUrl: String
+        get() = DEFAULT_AVATAR_URL.format(discriminator % 5)
 
     val displayAvatarUrl: String
-        get() = avatarUrl ?: DEFAULT_AVATAR_URL.format(discriminator % 5)
+        get() = avatarUrl ?: defaultAvatarUrl
 
     companion object {
         const val AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s"
