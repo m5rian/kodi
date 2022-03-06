@@ -5,7 +5,9 @@ import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readBytes
 import io.ktor.http.cio.websocket.send
 import kotlinx.coroutines.flow.consumeAsFlow
+import net.pringles.kodi.gateway.events.IEventHandler
 import net.pringles.kodi.gateway.events.RawEvent
+import net.pringles.kodi.gateway.events.ReadyHandler
 import net.pringles.kodi.gateway.misc.Intent
 import net.pringles.kodi.gateway.misc.OpCode
 import net.pringles.kodi.utils.JsonData
@@ -66,7 +68,16 @@ internal class WebSocket(val client: KodiClient, val session: DefaultWebSocketSe
     private suspend fun onDispatch(data: JsonData) {
         logger.trace("Kodi <- $data")
         val type = data["t"].text()
-
         client.events.emit(RawEvent(client, type, data["d"]))
+        val handler = handlers[type] ?: return logger.warn("Unrecognized event type: $type\n${data.format()}")
+
+        val event = handler.handle(client, data["d"])
+        client.events.emit(event)
+    }
+
+    internal companion object {
+        val handlers: Map<String, IEventHandler> = listOf(
+            ReadyHandler
+        ).associateBy { it.identifier }
     }
 }

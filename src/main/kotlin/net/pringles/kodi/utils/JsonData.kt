@@ -10,8 +10,12 @@ class JsonData(private var node: JsonNode?) {
     operator fun get(field: String): JsonData = JsonData(node?.path(field))
     operator fun get(index: Int): JsonData = JsonData(node?.path(index))
 
-    fun text(): String = node!!.asText()
-    fun int(): Int = node!!.intValue()
+    fun text(): String = textOrNull() ?: throw IllegalStateException("Cannot convert this data as text")
+    fun textOrNull(): String? = node?.textValue()
+    fun int(): Int = intOrNull() ?: throw IllegalStateException("Cannot convert this data as int")
+    fun intOrNull(): Int? = node?.intValue()
+    fun bool(): Boolean = boolOrNull() ?: throw IllegalStateException("Cannot convert this data as bool")
+    fun boolOrNull(): Boolean? = if (node?.isBoolean == true) node!!.booleanValue() else null
 
     fun hasValue(field: String) = node?.hasNonNull(field) != false
 

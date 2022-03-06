@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.pringles.kodi.Kodi
 import net.pringles.kodi.gateway.events.IEvent
+import net.pringles.kodi.models.User
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -17,6 +18,8 @@ class KodiClient(val config: ClientConfig) {
     private val httpClient = config.httpClient
     private lateinit var webSocket: WebSocket
 
+    lateinit var user: User
+        internal set
     val events = MutableSharedFlow<IEvent>()
     val ping: Duration get() = webSocket.heartbeatManager.ping().nanoseconds
     var totalEvents: Int? = null
