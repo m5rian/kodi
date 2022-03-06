@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.websocket.WebSockets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
+import net.pringles.kodi.cache.CacheConfig
 import net.pringles.kodi.gateway.misc.Intent
 
 @Suppress("EXPERIMENTAL_API_USAGE")
@@ -13,6 +14,7 @@ class ClientConfig(
     var intentsConfig: IntentsConfig = IntentsConfig(),
     var httpClient: HttpClient = HttpClient(CIO) { install(WebSockets) },
     var scope: CoroutineScope = GlobalScope,
+    var cache: CacheConfig = CacheConfig()
 ) {
     fun intents(builder: IntentsConfig.() -> Unit) {
         intentsConfig = IntentsConfig().apply(builder)
@@ -34,6 +36,10 @@ class ClientConfig(
     fun setIntents(intents: Collection<Intent>) {
         intentsConfig.intents.clear()
         intentsConfig.intents.addAll(intents)
+    }
+
+    fun cache(builder: CacheConfig.() -> Unit) {
+        cache = CacheConfig().apply(builder)
     }
 }
 
