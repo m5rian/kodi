@@ -8,6 +8,8 @@ open class BaseChannelData(
     override val id: Long
 ) : BaseChannel {
     override lateinit var type: ChannelType
+
+    override fun toString() = "Channel($id)"
 }
 
 interface BaseChannel : ISnowflake {
