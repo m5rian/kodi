@@ -14,6 +14,8 @@ open class GuildChannelData(
 
     override suspend fun guild() =
         client.tempGuildCache[guildId]
+
+    override fun toString() = "GuildChannel($guildId > $id)"
 }
 
 interface GuildChannel : BaseChannel {

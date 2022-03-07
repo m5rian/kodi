@@ -6,7 +6,9 @@ class CategoryChannelData(
     client: KodiClient,
     guildId: Long,
     id: Long,
-) : GuildChannelData(client, guildId, id), CategoryChannel
+) : GuildChannelData(client, guildId, id), CategoryChannel {
+    override fun toString() = "CategoryChannel($guildId > $id)"
+}
 
 interface CategoryChannel : GuildChannel {
     override val client: KodiClient
