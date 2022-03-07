@@ -13,7 +13,7 @@ open class GuildChannelData(
     override var permissionOverwrites: List<*> = emptyList<Any>()
 
     override suspend fun guild() =
-        client.tempGuildCache[guildId]
+        client.guildCache.get(guildId)
 }
 
 interface GuildChannel : BaseChannel {
