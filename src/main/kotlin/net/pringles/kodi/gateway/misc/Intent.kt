@@ -22,9 +22,9 @@ enum class Intent(val bitCount: Int, val privileged: Boolean, val guild: Boolean
     val value = 1 shl bitCount
 
     companion object {
-        val ALL = values().toMutableSet()
-        val DEFAULT = ALL.filterNot { it.privileged }.toMutableSet()
-        val NONE = emptySet<Intent>()
+        val ALL = values()
+        val DEFAULT = ALL.filterNot { it.privileged }.toTypedArray()
+        val NONE = emptyArray<Intent>()
 
         fun bitmask(intents: Collection<Intent>) =
             intents.map { it.value }.reduce { acc, i -> acc or i }

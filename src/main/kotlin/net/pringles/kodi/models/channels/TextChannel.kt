@@ -6,7 +6,9 @@ class TextChannelData(
     client: KodiClient,
     guildId: Long,
     id: Long,
-) : GuildMessageChannelData(client, guildId, id), TextChannel
+) : GuildMessageChannelData(client, guildId, id), TextChannel {
+    override fun toString() = "TextChannel($guildId > $id)"
+}
 
 interface TextChannel : GuildMessageChannel {
     override val client: KodiClient

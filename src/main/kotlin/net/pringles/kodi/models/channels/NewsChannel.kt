@@ -6,7 +6,9 @@ class NewsChannelData(
     client: KodiClient,
     guildId: Long,
     id: Long,
-) : GuildMessageChannelData(client, guildId, id), NewsChannel
+) : GuildMessageChannelData(client, guildId, id), NewsChannel {
+    override fun toString() = "NewsChannel($guildId > $id)"
+}
 
 interface NewsChannel : GuildMessageChannel {
     override val client: KodiClient
