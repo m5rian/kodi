@@ -7,7 +7,7 @@ typealias GetCache<K, V> = suspend (K) -> V?
 typealias UpdateCache<V> = suspend (V) -> Unit
 typealias RemoveCache<K> = suspend (K) -> Unit
 
-class ModelCachePolicyBuilder<K, V>(
+abstract class ModelCachePolicyBuilder<K, V>(
     internal var onView: ViewCache<V>? = null,
     internal var onGet: GetCache<K, V>? = null,
     internal var onUpdate: UpdateCache<V>? = null,

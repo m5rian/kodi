@@ -1,5 +1,6 @@
 package net.pringles.kodi.gateway.cache
 
+import net.pringles.kodi.gateway.cache.modelCaches.*
 import net.pringles.kodi.models.Guild
 import net.pringles.kodi.models.Member
 import net.pringles.kodi.models.Role
@@ -15,7 +16,7 @@ object DefaultCachePolicy {
     private val memberCache = ConcurrentHashMap<MemberCacheKey, Member>()
 
     fun user() =
-        ModelCachePolicyBuilder<Long, User>().apply {
+        UserCache().apply {
             view { userCache.values.toList() }
             get { userCache[it] }
             update { userCache[it.id] = it }
@@ -23,7 +24,7 @@ object DefaultCachePolicy {
         }
 
     fun guild() =
-        ModelCachePolicyBuilder<Long, Guild>().apply {
+        GuildCache().apply {
             view { guildCache.values.toList() }
             get { id -> guildCache[id] }
             update { guild -> guildCache[guild.id] = guild }
@@ -31,7 +32,7 @@ object DefaultCachePolicy {
         }
 
     fun channel() =
-        ModelCachePolicyBuilder<Long, BaseChannel>().apply {
+        ChannelCache().apply {
             view { channelCache.values.toList() }
             get { id -> channelCache[id] }
             update { channel -> channelCache[channel.id] = channel }
@@ -39,7 +40,7 @@ object DefaultCachePolicy {
         }
 
     fun role() =
-        ModelCachePolicyBuilder<Long, Role>().apply {
+        RoleCache().apply {
             view { roleCache.values.toList() }
             get { id -> roleCache[id] }
             update { role -> roleCache[role.id] = role }
@@ -47,12 +48,12 @@ object DefaultCachePolicy {
         }
 
     fun member() =
-        ModelCachePolicyBuilder<MemberCacheKey, Member>().apply {
+        MemberCache().apply {
             view { memberCache.values.toList() }
             get { memberCache[it] }
             update { memberCache[MemberCacheKey(it.guildId, it.id)] = it }
             remove { memberCache.remove(it) }
         }
 
-    fun <K, V> none() = ModelCachePolicyBuilder<K, V>()
+    fun <K, V> none() = EmptyCache<K, V>()
 }

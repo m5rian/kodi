@@ -25,6 +25,9 @@ fun main() = runBlocking {
                 get { roleCache[it] }
                 update { if (it.id == it.guildId) roleCache[it.id] = it }
                 remove { roleCache.remove(it) }
+                getByGuildId {
+                    emptyList()
+                }
             }
         }
     }
