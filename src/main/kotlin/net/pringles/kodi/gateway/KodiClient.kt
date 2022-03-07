@@ -10,13 +10,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.pringles.kodi.Kodi
 import net.pringles.kodi.gateway.events.IEvent
-import net.pringles.kodi.models.Guild
-import net.pringles.kodi.models.Member
 import net.pringles.kodi.models.ModelsBuilder
-import net.pringles.kodi.models.Role
 import net.pringles.kodi.models.User
-import net.pringles.kodi.models.channels.BaseChannel
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -24,12 +19,13 @@ class KodiClient(val config: ClientConfig) {
     private val httpClient = config.httpClient
     private lateinit var webSocket: WebSocket
 
+    private val cache = config.cacheConfig
+    internal val userCache = cache.userCachePolicy.build(this)
+    internal val guildCache = cache.guildCachePolicy.build(this)
+    internal val channelCache = cache.channelCachePolicy.build(this)
+    internal val roleCache = cache.roleCachePolicy.build(this)
+    internal val memberCache = cache.memberCachePolicy.build(this)
     internal val modelsBuilder = ModelsBuilder(this)
-    internal val tempGuildCache = ConcurrentHashMap<Long, Guild>()
-    internal val tempChannelCache = ConcurrentHashMap<Long, BaseChannel>()
-    internal val tempRoleCache = ConcurrentHashMap<Long, Role>()
-    internal val tempMemberCache = ConcurrentHashMap<Long, Member>()
-    internal val tempUserCache = ConcurrentHashMap<Long, User>()
 
     lateinit var user: User
         internal set

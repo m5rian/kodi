@@ -13,8 +13,14 @@ data class MemberData(
     override var deaf: Boolean = false
     override lateinit var joinedAt: OffsetDateTime
 
-    override suspend fun guild() = client.tempGuildCache[guildId]
-    override suspend fun roles() = client.tempRoleCache.values.filter { it.id in roleIds }
+    override suspend fun guild() = client.guildCache.get(guildId)
+    override suspend fun roles() = client.roleCache.view()
+        .filter { it.id in roleIds }
+        .toMutableList()
+        .apply {
+            val publicRole = guild()?.publicRole() ?: return@apply
+            add(publicRole)
+        }
 
     override fun toString() = "Member(${guildId} > ${user.id})"
 }

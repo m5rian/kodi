@@ -16,8 +16,7 @@ data class RoleData(
     override var hoist: Boolean = false
     override var mentionable: Boolean = false
 
-    override suspend fun guild() =
-        client.tempGuildCache[guildId]
+    override suspend fun guild() = client.guildCache.get(guildId)
 
     override fun toString() = "Role($guildId > $id)"
 }

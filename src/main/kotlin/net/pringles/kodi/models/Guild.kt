@@ -1,6 +1,7 @@
 package net.pringles.kodi.models
 
 import net.pringles.kodi.gateway.KodiClient
+import net.pringles.kodi.gateway.cache.MemberCacheKey
 import net.pringles.kodi.models.channels.GuildChannel
 
 data class GuildData(
@@ -15,20 +16,20 @@ data class GuildData(
     override var roleIds: List<Long> = emptyList()
 
     override suspend fun channels() =
-        client.tempChannelCache.values
+        client.channelCache.view()
             .filterIsInstance<GuildChannel>()
             .filter { it.guildId == id }
 
     override suspend fun roles() =
-        client.tempRoleCache.values
+        client.roleCache.view()
             .filter { it.guildId == id }
 
     override suspend fun members() =
-        client.tempMemberCache.values
+        client.memberCache.view()
             .filter { it.guildId == id }
 
-    override suspend fun owner() = client.tempMemberCache[ownerId]
-    override suspend fun publicRole() = client.tempRoleCache[ownerId]
+    override suspend fun owner() = client.memberCache.get(MemberCacheKey(id, ownerId))
+    override suspend fun publicRole() = client.roleCache.get(id)
 
     override fun toString() = "Guild($id)"
 }

@@ -16,7 +16,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
         user.discriminator = data["discriminator"].asInt()
         user.bot = data["bot"].boolOrNull() ?: false
         user.avatarId = data["avatar"].textOrNull()
-        client.tempUserCache[user.id] = user
+        client.userCache.update(user)
         return user
     }
 
@@ -29,7 +29,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
         guild.channelIds = data["channels"].list().map { createGuildChannel(it, guild).id }
         guild.roleIds = data["roles"].list().map { createRole(it, guild).id }
         data["members"].list().forEach { createMember(it, guild.id, createUser(it["user"])).id }
-        client.tempGuildCache[guild.id] = guild
+        client.guildCache.update(guild)
         return guild
     }
 
@@ -43,7 +43,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
         role.managed = roleData["managed"].bool()
         role.hoist = roleData["hoist"].bool()
         role.mentionable = roleData["mentionable"].bool()
-        client.tempRoleCache[role.id] = role
+        client.roleCache.update(role)
         return role
     }
 
@@ -53,7 +53,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
         member.mute = memberData["mute"].bool()
         member.deaf = memberData["deaf"].bool()
         member.joinedAt = memberData["joined_at"].time()
-        client.tempMemberCache[member.id] = member
+        client.memberCache.update(member)
         return member
     }
 
@@ -66,7 +66,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
         message.timestamp = messageData["timestamp"].time()
         if (messageData.hasValue("member")) {
             message.guildId = messageData["guild_id"].asLong()
-            createMember(messageData["member"], message.guildId, author)
+            createMember(messageData["member"], message.guildId!!, author)
         }
         return message
     }
@@ -74,7 +74,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
     fun createDMChannel(channelData: JsonData): BaseChannelData {
         val channel = BaseChannelData(client, channelData["id"].asLong())
         channel.type = ChannelType.values().firstOrNull { it.id == channelData["type"].int() } ?: ChannelType.UNKNOWN
-        client.tempChannelCache[channel.id] = channel
+        client.channelCache.update(channel)
         return channel
     }
 
@@ -95,7 +95,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
                 channel.nsfw = channelData["nsfw"].boolOrNull() ?: false
                 channel.topic = channelData["topic"].textOrNull()
                 channel.lastMessageId = channelData["last_message_id"].asLong()
-                client.tempChannelCache[channel.id] = channel
+                client.channelCache.update(channel)
                 channel
             }
             ChannelType.GUILD_NEWS -> {
@@ -108,7 +108,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
                 channel.nsfw = channelData["nsfw"].boolOrNull() ?: false
                 channel.topic = channelData["topic"].textOrNull()
                 channel.lastMessageId = channelData["last_message_id"].asLong()
-                client.tempChannelCache[channel.id] = channel
+                client.channelCache.update(channel)
                 channel
             }
             ChannelType.GUILD_CATEGORY -> {
@@ -116,7 +116,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
                 channel.name = channelData["name"].text()
                 channel.position = channelData["position"].int()
                 channel.permissionOverwrites = channelData["permission_overwrites"].list()
-                client.tempChannelCache[channel.id] = channel
+                client.channelCache.update(channel)
                 channel
             }
             else -> {
@@ -125,7 +125,7 @@ internal class ModelsBuilder(private val client: KodiClient) {
                 channel.name = channelData["name"].text()
                 channel.position = channelData["position"].int()
                 channel.permissionOverwrites = channelData["permission_overwrites"].list()
-                client.tempChannelCache[channel.id] = channel
+                client.channelCache.update(channel)
                 channel
             }
         }
