@@ -11,7 +11,7 @@ private val logger = LoggerFactory.getLogger("Kodi-Test")
 fun main() = runBlocking {
     val client = Kodi.create {
         token = System.getenv("TOKEN")
-        setIntents(Intent.ALL)
+        setIntents(*Intent.ALL)
     }
     client.on<ReadyEvent> {
         logger.debug("${it.type} -> ${it.user.tag} (${it.user.displayAvatarUrl})")

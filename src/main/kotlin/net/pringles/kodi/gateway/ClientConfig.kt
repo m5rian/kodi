@@ -38,7 +38,7 @@ class ClientConfig(
 }
 
 class IntentsConfig(
-    var intents: MutableSet<Intent> = Intent.DEFAULT,
+    var intents: MutableSet<Intent> = Intent.DEFAULT.toMutableSet(),
 ) {
     operator fun Intent.unaryPlus() {
         intents.add(this)
