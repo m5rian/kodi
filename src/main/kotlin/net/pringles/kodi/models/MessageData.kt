@@ -1,6 +1,7 @@
 package net.pringles.kodi.models
 
 import net.pringles.kodi.gateway.KodiClient
+import net.pringles.kodi.gateway.cache.MemberCacheKey
 import net.pringles.kodi.models.channels.MessageChannel
 import java.time.OffsetDateTime
 
@@ -11,20 +12,16 @@ data class MessageData(
     override lateinit var content: String
     override var channelId: Long = 0L
     override var authorId: Long = 0L
-    override var guildId: Long = 0L
+    override var guildId: Long? = null
     override lateinit var timestamp: OffsetDateTime
 
-    override suspend fun channel() =
-        client.tempChannelCache[channelId] as? MessageChannel
+    override suspend fun channel() = client.channelCache.get(channelId) as? MessageChannel
 
-    override suspend fun author() =
-        client.tempUserCache[authorId]
+    override suspend fun author() = client.userCache.get(authorId)
 
-    override suspend fun member() =
-        client.tempMemberCache[authorId]
+    override suspend fun member() = guildId?.let { client.memberCache.get(MemberCacheKey(it, authorId)) }
 
-    override suspend fun guild() =
-        client.tempGuildCache[guildId]
+    override suspend fun guild() = guildId?.let { client.guildCache.get(it) }
 }
 
 interface Message : ISnowflake {

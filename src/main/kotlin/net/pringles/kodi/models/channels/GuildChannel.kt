@@ -12,8 +12,7 @@ open class GuildChannelData(
     override var position: Int = 0
     override var permissionOverwrites: List<*> = emptyList<Any>()
 
-    override suspend fun guild() =
-        client.tempGuildCache[guildId]
+    override suspend fun guild() = client.guildCache.get(guildId)
 
     override fun toString() = "GuildChannel($guildId > $id)"
 }
